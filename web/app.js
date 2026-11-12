@@ -554,18 +554,24 @@ function exportScenarioJSON() {
   downloadBlob(`hydroinsight-${state.basin.toLowerCase()}-scenario.json`, JSON.stringify(payload, null, 2), "application/json");
 }
 
-function showCodeExample(key) {
+function showCodeExample(key, openModal = true) {
   const example = codeExamples[key];
   if (!example) return;
   document.querySelectorAll(".pipeline article").forEach((card) => {
     const active = card.dataset.code === key;
     card.classList.toggle("active", active);
-    card.setAttribute("aria-selected", String(active));
+    card.setAttribute("aria-pressed", String(active));
   });
   $("#codeLanguage").textContent = example.language;
   $("#codeFile").textContent = example.file;
   $("#codeSnippet").textContent = example.code;
   $("#codeLink").href = `https://github.com/vninamore/hydroinsight-peru/blob/main/${example.file}`;
+  const modal = $("#codeModal");
+  if (openModal && modal) {
+    modal.hidden = false;
+    document.body.classList.add("modal-open");
+    $("#closeCodeModal").focus();
+  }
 }
 
 function bindControls() {
@@ -610,6 +616,17 @@ function bindControls() {
       if (event.key === "Enter" || event.key === " ") activate();
     });
   });
+  const closeCodeModal = () => {
+    $("#codeModal").hidden = true;
+    document.body.classList.remove("modal-open");
+  };
+  $("#closeCodeModal").addEventListener("click", closeCodeModal);
+  $("#codeModal").addEventListener("click", (event) => {
+    if (event.target === $("#codeModal")) closeCodeModal();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !$("#codeModal").hidden) closeCodeModal();
+  });
 }
 
 async function loadData() {
@@ -630,7 +647,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   $("#scenarioSelect").value = "baseline";
   $("#windowSelect").value = "30";
   bindControls();
-  showCodeExample("python");
+  showCodeExample("python", false);
 
   try {
     await loadData();
