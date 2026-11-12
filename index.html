@@ -92,16 +92,22 @@
 
     <section class="architecture" id="architecture">
       <div class="section-heading"><div><p class="eyebrow">SYSTEM DESIGN</p><h2>One question, five languages</h2></div><p>Each technology has a specific role instead of being added for decoration.</p></div>
-      <div class="pipeline" role="tablist" aria-label="Code examples by technology">
-        <article data-code="python" role="tab" tabindex="0"><b>01</b><h3>Python</h3><p>Deterministic data generation, conceptual water balance, routing and automated tests.</p><code>python/hydrology.py</code></article>
-        <article data-code="postgis" role="tab" tabindex="0"><b>02</b><h3>PostGIS</h3><p>Spatial schema, quality constraints, geometry indexes and operational alert queries.</p><code>sql/schema.sql</code></article>
-        <article data-code="r" role="tab" tabindex="0"><b>03</b><h3>R</h3><p>Gumbel extreme-value analysis and discharge estimates for return periods.</p><code>r/extreme_value_analysis.R</code></article>
-        <article data-code="julia" role="tab" tabindex="0"><b>04</b><h3>Julia</h3><p>Fast reservoir rule-curve simulation with reliability and spill indicators.</p><code>julia/reservoir_simulation.jl</code></article>
-        <article data-code="javascript" role="tab" tabindex="0"><b>05</b><h3>JavaScript</h3><p>Accessible exploration of scenarios, maps and hydrographs.</p><code>web/app.js</code></article>
+      <div class="pipeline" aria-label="Code examples by technology">
+        <article data-code="python" role="button" tabindex="0" aria-haspopup="dialog"><b>01</b><h3>Python</h3><p>Deterministic data generation, conceptual water balance, routing and automated tests.</p><code>python/hydrology.py</code></article>
+        <article data-code="postgis" role="button" tabindex="0" aria-haspopup="dialog"><b>02</b><h3>PostGIS</h3><p>Spatial schema, quality constraints, geometry indexes and operational alert queries.</p><code>sql/schema.sql</code></article>
+        <article data-code="r" role="button" tabindex="0" aria-haspopup="dialog"><b>03</b><h3>R</h3><p>Gumbel extreme-value analysis and discharge estimates for return periods.</p><code>r/extreme_value_analysis.R</code></article>
+        <article data-code="julia" role="button" tabindex="0" aria-haspopup="dialog"><b>04</b><h3>Julia</h3><p>Fast reservoir rule-curve simulation with reliability and spill indicators.</p><code>julia/reservoir_simulation.jl</code></article>
+        <article data-code="javascript" role="button" tabindex="0" aria-haspopup="dialog"><b>05</b><h3>JavaScript</h3><p>Accessible exploration of scenarios, maps and hydrographs.</p><code>web/app.js</code></article>
       </div>
-      <div class="code-lab" role="tabpanel">
-        <div class="code-lab-head"><div><span id="codeLanguage">Python</span><strong id="codeFile">python/hydrology.py</strong></div><a id="codeLink" href="#" target="_blank" rel="noreferrer">Open complete file ↗</a></div>
-        <pre><code id="codeSnippet"></code></pre>
+      <p class="code-hint">Select a technology to inspect a real implementation without leaving the portfolio.</p>
+      <div class="code-modal" id="codeModal" role="dialog" aria-modal="true" aria-labelledby="codeLanguage" hidden>
+        <div class="code-lab">
+          <div class="code-lab-head">
+            <div><span id="codeLanguage">Python</span><strong id="codeFile">python/hydrology.py</strong></div>
+            <div class="code-lab-actions"><a id="codeLink" href="#" target="_blank" rel="noreferrer">Open complete file ↗</a><button id="closeCodeModal" type="button" aria-label="Close code viewer">×</button></div>
+          </div>
+          <pre><code id="codeSnippet"></code></pre>
+        </div>
       </div>
     </section>
 
