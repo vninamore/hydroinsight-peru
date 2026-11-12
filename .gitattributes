@@ -1,0 +1,14 @@
+# Explicit GitHub Linguist classification for the multi-language architecture.
+*.py linguist-detectable=true linguist-language=Python
+*.R linguist-detectable=true linguist-language=R
+*.sql linguist-detectable=true linguist-language=SQL
+*.jl linguist-detectable=true linguist-language=Julia
+*.js linguist-detectable=true linguist-language=JavaScript
+*.css linguist-detectable=true linguist-language=CSS
+*.html linguist-detectable=true linguist-language=HTML
+
+# Demonstration datasets and documentation should not distort code statistics.
+data/** linguist-detectable=false
+docs/** linguist-detectable=false
+*.csv linguist-detectable=false
+*.geojson linguist-detectable=false
