@@ -1,0 +1,21 @@
+name: Validate HydroInsight
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run hydrology tests
+        run: python -m unittest discover -s python -p "test_*.py"
+      - name: Regenerate deterministic dataset
+        run: python python/generate_data.py
+      - name: Verify web entry point
+        run: test -f index.html && test -f web/app.js && test -f data/hydro_timeseries.csv
+
