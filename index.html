@@ -6,6 +6,7 @@
   <meta name="description" content="HydroInsight Peru: a multi-language hydrology and flood-risk laboratory.">
   <meta name="theme-color" content="#06151f">
   <title>HydroInsight Peru | Hydrology & Flood Risk Lab</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="web/styles.css">
 </head>
 <body>
@@ -27,9 +28,9 @@
       <div class="hero-visual" aria-label="Animated water-cycle diagram">
         <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div>
         <div class="water-core"><strong id="heroRisk">42</strong><span>risk index</span></div>
-        <div class="float-card rain"><small>RAINFALL</small><b>+18.4 mm</b></div>
-        <div class="float-card flow"><small>DISCHARGE</small><b>126 m³/s</b></div>
-        <div class="float-card soil"><small>SOIL</small><b>67% moist.</b></div>
+        <div class="float-card rain"><small>RAINFALL</small><b id="heroRain">Loading…</b></div>
+        <div class="float-card flow"><small>DISCHARGE</small><b id="heroFlow">Loading…</b></div>
+        <div class="float-card soil"><small>SOIL</small><b id="heroSoil">Loading…</b></div>
       </div>
     </section>
 
@@ -39,43 +40,68 @@
       <div class="control-bar">
         <label>Basin<select id="basinSelect"><option>Rimac</option><option>Piura</option><option>Mantaro</option></select></label>
         <label>Climate scenario<select id="scenarioSelect"><option value="baseline">Baseline</option><option value="elnino">El Niño pulse</option><option value="drought">Dry-year stress</option></select></label>
-        <label>Analysis window<select id="windowSelect"><option value="30">30 days</option><option value="90" selected>90 days</option><option value="180">180 days</option></select></label>
-        <div class="status"><i></i><span>Model ready</span></div>
+        <label>Analysis window<select id="windowSelect"><option value="30" selected>30 days</option><option value="90">90 days</option><option value="180">180 days</option></select></label>
+        <div class="status"><i></i><span>Loading data…</span></div>
+      </div>
+
+      <div class="what-if-bar">
+        <label class="range-control">
+          <span>Rainfall anomaly <output id="rainAnomalyValue" for="rainAnomaly">0%</output></span>
+          <input id="rainAnomaly" type="range" min="-50" max="150" step="5" value="0">
+          <small><i>−50%</i><i>WHAT-IF SENSITIVITY</i><i>+150%</i></small>
+        </label>
+        <label class="toggle-control">
+          <input id="compareBaseline" type="checkbox">
+          <span class="toggle-track"><i></i></span>
+          <span>Compare with Baseline</span>
+        </label>
+        <button class="ghost-button" id="resetScenario" type="button">Reset simulation</button>
       </div>
 
       <div class="metric-grid">
-        <article><span>Mean discharge</span><strong id="dischargeMetric">—</strong><small>m³/s</small><div class="spark cyan"></div></article>
-        <article><span>Total rainfall</span><strong id="rainMetric">—</strong><small>mm / window</small><div class="spark blue"></div></article>
-        <article><span>Soil moisture</span><strong id="soilMetric">—</strong><small>mean saturation</small><div class="spark violet"></div></article>
-        <article class="risk-card"><span>Peak flood risk</span><strong id="riskMetric">—</strong><small id="riskLabel">calculating</small><div class="risk-track"><i id="riskFill"></i></div></article>
+        <article><span>Mean discharge</span><strong id="dischargeMetric">Loading</strong><small>m³/s</small><div class="spark cyan"></div></article>
+        <article><span>Total rainfall</span><strong id="rainMetric">Loading</strong><small>mm / window</small><div class="spark blue"></div></article>
+        <article><span>Soil moisture</span><strong id="soilMetric">Loading</strong><small>mean saturation</small><div class="spark violet"></div></article>
+        <article class="risk-card"><span>Peak flood risk</span><strong id="riskMetric">Loading</strong><small id="riskLabel">calculating</small><div class="risk-track"><i id="riskFill"></i></div></article>
       </div>
 
       <div class="analysis-grid">
         <article class="panel chart-panel">
-          <div class="panel-head"><div><span>HYDROGRAPH</span><h3>Rainfall–runoff response</h3></div><div class="legend"><i class="legend-rain"></i>Rainfall <i class="legend-flow"></i>Discharge</div></div>
-          <svg id="hydroChart" viewBox="0 0 860 360" role="img" aria-label="Rainfall and discharge time series"></svg>
+          <div class="panel-head"><div><span>HYDROGRAPH</span><h3>Rainfall–runoff response</h3></div><div class="legend"><i class="legend-rain"></i>Rainfall <i class="legend-flow"></i>Scenario <span id="baselineLegend" hidden><i class="legend-baseline"></i>Baseline</span></div></div>
+          <div class="chart-wrap">
+            <svg id="hydroChart" viewBox="0 0 860 360" role="img" aria-label="Interactive rainfall and discharge time series"></svg>
+            <div class="chart-tooltip" id="chartTooltip" hidden></div>
+          </div>
         </article>
         <article class="panel map-panel">
-          <div class="panel-head"><div><span>SPATIAL CONTEXT</span><h3>Selected basins</h3></div><small>EPSG:4326</small></div>
-          <svg id="basinMap" viewBox="0 0 500 470" role="img" aria-label="Map of demonstration basins in Peru"></svg>
-          <p class="map-note">Click a basin geometry to update the model.</p>
+          <div class="panel-head"><div><span>SPATIAL CONTEXT</span><h3>Basins &amp; relief</h3></div><small>EPSG:4326</small></div>
+          <div id="basinMap" role="application" aria-label="Interactive map of demonstration basins in Peru"></div>
+          <p class="map-note">Switch layers or click a basin to update the model.</p>
         </article>
       </div>
 
       <article class="panel events-panel">
-        <div class="panel-head"><div><span>EVENT DETECTION</span><h3>Highest simulated flow events</h3></div><small id="eventCount">0 events</small></div>
+        <div class="panel-head event-heading">
+          <div><span>EVENT DETECTION</span><h3>Highest simulated flow events</h3></div>
+          <div class="event-actions"><small id="eventCount">Loading events…</small><button id="downloadCsv" type="button">Download CSV</button><button id="exportJson" type="button">Export JSON</button></div>
+        </div>
         <div class="table-wrap"><table><thead><tr><th>Date</th><th>Basin</th><th>Rainfall</th><th>Discharge</th><th>Risk</th><th>Status</th></tr></thead><tbody id="eventRows"></tbody></table></div>
+        <p class="table-note">Select an event to focus its peak in the hydrograph and map.</p>
       </article>
     </section>
 
     <section class="architecture" id="architecture">
       <div class="section-heading"><div><p class="eyebrow">SYSTEM DESIGN</p><h2>One question, five languages</h2></div><p>Each technology has a specific role instead of being added for decoration.</p></div>
-      <div class="pipeline">
-        <article><b>01</b><h3>Python</h3><p>Deterministic data generation, conceptual water balance, routing and automated tests.</p><code>python/generate_data.py</code></article>
-        <article><b>02</b><h3>PostGIS</h3><p>Spatial schema, quality constraints, geometry indexes and operational alert queries.</p><code>sql/schema.sql</code></article>
-        <article><b>03</b><h3>R</h3><p>Gumbel extreme-value analysis and discharge estimates for return periods.</p><code>r/extreme_value_analysis.R</code></article>
-        <article><b>04</b><h3>Julia</h3><p>Fast reservoir rule-curve simulation with reliability and spill indicators.</p><code>julia/reservoir_simulation.jl</code></article>
-        <article><b>05</b><h3>JavaScript</h3><p>Accessible, dependency-free exploration of scenarios, maps and hydrographs.</p><code>web/app.js</code></article>
+      <div class="pipeline" role="tablist" aria-label="Code examples by technology">
+        <article data-code="python" role="tab" tabindex="0"><b>01</b><h3>Python</h3><p>Deterministic data generation, conceptual water balance, routing and automated tests.</p><code>python/hydrology.py</code></article>
+        <article data-code="postgis" role="tab" tabindex="0"><b>02</b><h3>PostGIS</h3><p>Spatial schema, quality constraints, geometry indexes and operational alert queries.</p><code>sql/schema.sql</code></article>
+        <article data-code="r" role="tab" tabindex="0"><b>03</b><h3>R</h3><p>Gumbel extreme-value analysis and discharge estimates for return periods.</p><code>r/extreme_value_analysis.R</code></article>
+        <article data-code="julia" role="tab" tabindex="0"><b>04</b><h3>Julia</h3><p>Fast reservoir rule-curve simulation with reliability and spill indicators.</p><code>julia/reservoir_simulation.jl</code></article>
+        <article data-code="javascript" role="tab" tabindex="0"><b>05</b><h3>JavaScript</h3><p>Accessible exploration of scenarios, maps and hydrographs.</p><code>web/app.js</code></article>
+      </div>
+      <div class="code-lab" role="tabpanel">
+        <div class="code-lab-head"><div><span id="codeLanguage">Python</span><strong id="codeFile">python/hydrology.py</strong></div><a id="codeLink" href="#" target="_blank" rel="noreferrer">Open complete file ↗</a></div>
+        <pre><code id="codeSnippet"></code></pre>
       </div>
     </section>
 
@@ -90,6 +116,7 @@
   </main>
 
   <footer><div><strong>HydroInsight Peru</strong><span>Built by Vanessa Nina More</span></div><a href="https://vninamore.github.io">Back to portfolio ↗</a></footer>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="web/app.js"></script>
 </body>
 </html>
