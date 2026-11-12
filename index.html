@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="HydroInsight Peru: a multi-language hydrology and flood-risk laboratory.">
+  <meta name="theme-color" content="#06151f">
+  <title>HydroInsight Peru | Hydrology & Flood Risk Lab</title>
+  <link rel="stylesheet" href="web/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top"><span class="brand-drop">H</span><span>HydroInsight <b>Peru</b></span></a>
+    <nav><a href="#dashboard">Dashboard</a><a href="#architecture">Architecture</a><a href="#methods">Methods</a></nav>
+    <a class="github-link" href="https://github.com/vninamore/hydroinsight-peru" target="_blank" rel="noreferrer">View repository ↗</a>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div>
+        <p class="eyebrow"><span></span> MULTI-LANGUAGE HYDROLOGY LAB</p>
+        <h1>From rainfall to <em>actionable water intelligence.</em></h1>
+        <p class="lead">A reproducible platform for water-balance modelling, flood-risk exploration and reservoir scenarios across three Peruvian basins.</p>
+        <div class="hero-actions"><a class="primary" href="#dashboard">Explore the dashboard</a><a class="secondary" href="#architecture">See the pipeline</a></div>
+        <div class="stack-line"><span>Python</span><span>R</span><span>PostGIS</span><span>JavaScript</span><span>Julia</span></div>
+      </div>
+      <div class="hero-visual" aria-label="Animated water-cycle diagram">
+        <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div>
+        <div class="water-core"><strong id="heroRisk">42</strong><span>risk index</span></div>
+        <div class="float-card rain"><small>RAINFALL</small><b>+18.4 mm</b></div>
+        <div class="float-card flow"><small>DISCHARGE</small><b>126 m³/s</b></div>
+        <div class="float-card soil"><small>SOIL</small><b>67% moist.</b></div>
+      </div>
+    </section>
+
+    <section class="dashboard" id="dashboard">
+      <div class="section-heading"><div><p class="eyebrow">SCENARIO EXPLORER</p><h2>Hydrological command center</h2></div><p>Choose a basin and stress-test its recent conditions under alternative climate scenarios.</p></div>
+
+      <div class="control-bar">
+        <label>Basin<select id="basinSelect"><option>Rimac</option><option>Piura</option><option>Mantaro</option></select></label>
+        <label>Climate scenario<select id="scenarioSelect"><option value="baseline">Baseline</option><option value="elnino">El Niño pulse</option><option value="drought">Dry-year stress</option></select></label>
+        <label>Analysis window<select id="windowSelect"><option value="30">30 days</option><option value="90" selected>90 days</option><option value="180">180 days</option></select></label>
+        <div class="status"><i></i><span>Model ready</span></div>
+      </div>
+
+      <div class="metric-grid">
+        <article><span>Mean discharge</span><strong id="dischargeMetric">—</strong><small>m³/s</small><div class="spark cyan"></div></article>
+        <article><span>Total rainfall</span><strong id="rainMetric">—</strong><small>mm / window</small><div class="spark blue"></div></article>
+        <article><span>Soil moisture</span><strong id="soilMetric">—</strong><small>mean saturation</small><div class="spark violet"></div></article>
+        <article class="risk-card"><span>Peak flood risk</span><strong id="riskMetric">—</strong><small id="riskLabel">calculating</small><div class="risk-track"><i id="riskFill"></i></div></article>
+      </div>
+
+      <div class="analysis-grid">
+        <article class="panel chart-panel">
+          <div class="panel-head"><div><span>HYDROGRAPH</span><h3>Rainfall–runoff response</h3></div><div class="legend"><i class="legend-rain"></i>Rainfall <i class="legend-flow"></i>Discharge</div></div>
+          <svg id="hydroChart" viewBox="0 0 860 360" role="img" aria-label="Rainfall and discharge time series"></svg>
+        </article>
+        <article class="panel map-panel">
+          <div class="panel-head"><div><span>SPATIAL CONTEXT</span><h3>Selected basins</h3></div><small>EPSG:4326</small></div>
+          <svg id="basinMap" viewBox="0 0 500 470" role="img" aria-label="Map of demonstration basins in Peru"></svg>
+          <p class="map-note">Click a basin geometry to update the model.</p>
+        </article>
+      </div>
+
+      <article class="panel events-panel">
+        <div class="panel-head"><div><span>EVENT DETECTION</span><h3>Highest simulated flow events</h3></div><small id="eventCount">0 events</small></div>
+        <div class="table-wrap"><table><thead><tr><th>Date</th><th>Basin</th><th>Rainfall</th><th>Discharge</th><th>Risk</th><th>Status</th></tr></thead><tbody id="eventRows"></tbody></table></div>
+      </article>
+    </section>
+
+    <section class="architecture" id="architecture">
+      <div class="section-heading"><div><p class="eyebrow">SYSTEM DESIGN</p><h2>One question, five languages</h2></div><p>Each technology has a specific role instead of being added for decoration.</p></div>
+      <div class="pipeline">
+        <article><b>01</b><h3>Python</h3><p>Deterministic data generation, conceptual water balance, routing and automated tests.</p><code>python/generate_data.py</code></article>
+        <article><b>02</b><h3>PostGIS</h3><p>Spatial schema, quality constraints, geometry indexes and operational alert queries.</p><code>sql/schema.sql</code></article>
+        <article><b>03</b><h3>R</h3><p>Gumbel extreme-value analysis and discharge estimates for return periods.</p><code>r/extreme_value_analysis.R</code></article>
+        <article><b>04</b><h3>Julia</h3><p>Fast reservoir rule-curve simulation with reliability and spill indicators.</p><code>julia/reservoir_simulation.jl</code></article>
+        <article><b>05</b><h3>JavaScript</h3><p>Accessible, dependency-free exploration of scenarios, maps and hydrographs.</p><code>web/app.js</code></article>
+      </div>
+    </section>
+
+    <section class="methods" id="methods">
+      <div><p class="eyebrow">MODEL TRANSPARENCY</p><h2>Designed to be inspected, challenged and extended.</h2></div>
+      <div class="method-cards">
+        <article><span>DATA</span><h3>Synthetic, not disguised</h3><p>The bundled series are deterministic demonstration data. The model is ready for adapters to SENAMHI, NASA POWER or ERA5.</p></article>
+        <article><span>QUALITY</span><h3>Validation by design</h3><p>Database constraints, quality flags, duplicate checks and unit tests make assumptions explicit and auditable.</p></article>
+        <article><span>LIMITS</span><h3>Decision support, not forecasting</h3><p>This conceptual model is a portfolio demonstration and must be calibrated before any operational hydrological use.</p></article>
+      </div>
+    </section>
+  </main>
+
+  <footer><div><strong>HydroInsight Peru</strong><span>Built by Vanessa Nina More</span></div><a href="https://vninamore.github.io">Back to portfolio ↗</a></footer>
+  <script src="web/app.js"></script>
+</body>
+</html>
+
